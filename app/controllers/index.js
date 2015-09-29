@@ -1,11 +1,17 @@
-require("babel/register");
 var express = require('express');
 var router = express.Router();
 var React = require('react');
-var PostBox = require('./../views/components/postBox.jsx');
+var PostsBox = require('./../views/components/postsBox.jsx');
+
+var Post = require('./../models/post');
 
 router.get('/', function(req, res) {
-  res.render('layouts/mainLayout', {app: React.renderToString(React.createElement(PostBox))});
+  Post.all(function(data) {
+    res.render('layouts/mainLayout',
+      {
+        app: React.renderToString(React.createElement(PostsBox, {data: data})),
+      });
+  });
 });
 
 module.exports = router;

@@ -3,12 +3,16 @@ var path = require('path');
 var app = express();
 var bodyParser = require('body-parser');
 var globals = require('./config/globals');
+require('babel/register');
 
 var index = require('./app/controllers/index');
+var bundles = require('./app/controllers/bundles');
+
 app.use('/', index);
+app.use('/bundles', bundles);
 
 app.set('view engine', 'jsx');
-var options = {beautify: true};
+var options = {transformViews: false};
 app.engine('jsx', require('express-react-views').createEngine(options));
 app.set('views', __dirname + '/app/views');
 app.use(express.static(path.join(__dirname, './app/assets')));
