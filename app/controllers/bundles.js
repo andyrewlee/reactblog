@@ -1,6 +1,5 @@
  var express = require('express');
  var router = express.Router();
- var React = require('react');
  var browserify = require('browserify');
 
  router.get('/postsBox.js', function(req, res) {

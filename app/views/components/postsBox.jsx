@@ -4,11 +4,16 @@ var PostsBox = React.createClass({
   getInitialState: function() {
     return { model: this.props.data }
   },
+  handlePostSubmit: function(post) {
+    var posts = this.state.model;
+    var newPosts = posts.concat([post]);
+    this.setState({model: newPosts});
+  },
   render: function() {
     return (
       <div className='postBox'>
         <h1>Posts</h1>
-        <PostForm />
+        <PostForm onPostSubmit={this.handlePostSubmit}/>
         <PostsList data={this.state.model} />
       </div>
     );
@@ -18,7 +23,9 @@ var PostsBox = React.createClass({
 var PostForm = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
-    console.log('hi');
+    var content = React.findDOMNode(this.refs.content).value.trim();
+    this.props.onPostSubmit({id: 4, content: content, created_at: '2015-09-24 17:40:41'});
+    React.findDOMNode(this.refs.content).value = '';
   },
   render: function() {
     return (
