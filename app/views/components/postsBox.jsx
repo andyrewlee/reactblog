@@ -116,7 +116,7 @@ var Post = React.createClass({
       })();
     } else {
       var createdAt = this.props.created_at;
-      var content = this.props.content;
+      var content = this.state.currentContent;
       postContent = (function() {
         return (
           <div className="postContent">
@@ -133,7 +133,7 @@ var Post = React.createClass({
           key={this.props.id}
           id={this.props.id}
           handlePostDelete={this.props.handlePostDelete}
-          handlePostToggle ={this.handlePostToggle}
+          handlePostToggle={this.handlePostToggle}
           userIsEditing={this.state.userIsEditing} />
       </div>
     )
@@ -151,7 +151,7 @@ var PostAdmin = React.createClass({
     this.props.handlePostToggle();
   },
   handleUpdate:function() {
-    console.log('Update pressed', this.props.id);
+    this.props.handlePostToggle();
   },
   render: function() {
     var buttonGroup;
@@ -186,7 +186,5 @@ var PostAdmin = React.createClass({
     );
   }
 });
-
-
 
 module.exports = PostsBox;
