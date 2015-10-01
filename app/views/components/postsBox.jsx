@@ -78,18 +78,63 @@ var PostsList = React.createClass({
 });
 
 var Post = React.createClass({
+  getInitialState: function() {
+    return {
+      userIsEditing: false,
+      currentContent: this.props.content
+    }
+  },
   handlePostDelete: function() {
     this.props.handlePostDelete(this.props.id);
   },
+  handleChange: function() {
+    this.setState({currentContent: React.findDOMNode(this.refs.content).value.trim()});
+  },
+  handlePostToggle: function() {
+    if(this.state.userIsEditing == true) {
+      this.setState({userIsEditing: false});
+    } else {
+      this.setState({userIsEditing: true});
+    }
+  },
   render: function() {
+    var postContent;
+    if(this.state.userIsEditing == true) {
+      var handleSubmit = this.handleSubmit;
+      var handleChange = this.handleChange;
+      var currentContent = this.state.currentContent;
+      postContent = (function() {
+        return (
+          <form className="editPostForm" onSubmit={handleSubmit}>
+            <input type="text"
+                   ref="content"
+                   value={currentContent}
+                   onChange={handleChange} />
+            <input type="submit" value="Post" />
+          </form>
+        );
+      })();
+    } else {
+      var createdAt = this.props.created_at;
+      var content = this.props.content;
+      postContent = (function() {
+        return (
+          <div className="postContent">
+            <h2>{createdAt}</h2>
+            <div>{content}</div>
+          </div>
+        )
+      })();
+    }
     return (
       <div className="postContent">
-        <h2>{this.props.created_at}</h2>
-        <div>{this.props.content}</div>
+        {postContent}
         <PostAdmin
           key={this.props.id}
           id={this.props.id}
-          handlePostDelete={this.props.handlePostDelete} />
+          handlePostDelete={this.props.handlePostDelete}
+          handlePostToggle ={this.handlePostToggle}
+          userIsEditing={this.state.userIsEditing} />
       </div>
     )
   }
@@ -100,16 +145,48 @@ var PostAdmin = React.createClass({
     this.props.handlePostDelete(this.props.id);
   },
   handleEdit: function() {
-    console.log('Edit pressed', this.props.id);
+    this.props.handlePostToggle();
+  },
+  handleClose:function() {
+    this.props.handlePostToggle();
+  },
+  handleUpdate:function() {
+    console.log('Update pressed', this.props.id);
   },
   render: function() {
+    var buttonGroup;
+    var handleDelete = this.handleDelete;
+    var handleEdit = this.handleEdit;
+    var handleClose = this.handleClose;
+    var handleUpdate = this.handleUpdate;
+
+    if(this.props.userIsEditing == true) {
+      buttonGroup = (function() {
+        return (
+          <div className="editingButtons">
+            <button onClick={handleClose}>Close</button>
+            <button onClick={handleUpdate}>Update</button>
+          </div>
+        );
+      })();
+    } else {
+      buttonGroup = (function() {
+        return(
+          <div className="notEditingButtons">
+            <button onClick={handleEdit}>Edit</button>
+            <button onClick={handleDelete}>Delete</button>
+          </div>
+        )
+      })();
+    }
     return (
       <div className="postAdmin">
-        <button onClick={this.handleDelete}>Delete</button>
-        <button onClick={this.handleEdit}>Edit</button>
+        {buttonGroup}
       </div>
     );
   }
 });
+
+
 
 module.exports = PostsBox;
