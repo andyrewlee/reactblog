@@ -22,15 +22,26 @@ var PostsBox = React.createClass({
     });
   },
   handlePostDelete: function(id) {
-    console.log('PostAdmin wants to delete', id);
-    var posts = this.state.model;
-    for(var i = 0; i < this.state.model.length; i++) {
-      if(this.state.model[i].id == id) {
-        this.state.model.splice(i, 1);
-        break;
+    var self = this;
+    $.ajax({
+      url: '/posts/' + id,
+      method: 'DELETE',
+      success: function(res) {
+        console.log('success');
+        var posts = self.state.model;
+        for(var i = 0; i < posts.length; i++) {
+          if(posts[i].id == id) {
+            posts.splice(i, 1);
+            break;
+          }
+        }
+        self.setState({model: posts});
+      },
+      error: function() {
+        console.log('failure');
       }
-    }
-    this.setState({model: posts});
+    });
+
   },
   render: function() {
     return (
@@ -45,14 +56,10 @@ var PostsBox = React.createClass({
 });
 
 var PostForm = React.createClass({
-  getInitialState: function() {
-    return {id: 4}
-  },
   handleSubmit: function(e) {
     e.preventDefault();
     var content = React.findDOMNode(this.refs.content).value.trim();
-    this.props.onPostSubmit({id: this.state.id, content: content});
-    this.setState({id: this.state.id + 1});
+    this.props.onPostSubmit({content: content});
     React.findDOMNode(this.refs.content).value = '';
   },
   render: function() {

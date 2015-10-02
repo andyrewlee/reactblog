@@ -22,13 +22,25 @@ var Post = {
 
     var query = 'INSERT INTO posts SET ? ';
 
-    connection.query(query, newPost, function(err, rows, fields) {
+    connection.query(query, newPost, function(err, result) {
       if(err) {
         var error = "Post was not created";
         callback(error, null);
       } else {
-        newPost.id = rows.insertId;
+        newPost.id = result.insertId;
         callback(null, {message: 'Post created', newPost: newPost});
+      }
+    });
+  },
+  destroy: function(id, callback) {
+    var query = 'DELETE FROM posts WHERE id = ' + connection.escape(id);
+    console.log(query);
+    connection.query(query, function(err, result) {
+      if(err) {
+        var error = "Post was not destroyed";
+        callback(error, null);
+      } else {
+        callback(null, rows);
       }
     });
   }
