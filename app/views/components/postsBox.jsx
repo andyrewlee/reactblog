@@ -5,9 +5,21 @@ var PostsBox = React.createClass({
     return { model: this.props.data }
   },
   handlePostSubmit: function(post) {
-    var posts = this.state.model;
-    var newPosts = posts.concat([post]);
-    this.setState({model: newPosts});
+    var self = this;
+    $.ajax({
+      url: '/posts',
+      method: "POST",
+      data: post,
+      success: function(res){
+        console.log('success', res);
+        var posts = self.state.model;
+        var newPosts = posts.concat(res.newPost);
+        self.setState({model: newPosts});
+      },
+      error: function(){
+        console.log('failure');
+      }
+    });
   },
   handlePostDelete: function(id) {
     console.log('PostAdmin wants to delete', id);
@@ -39,7 +51,7 @@ var PostForm = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
     var content = React.findDOMNode(this.refs.content).value.trim();
-    this.props.onPostSubmit({id: this.state.id, content: content, created_at: '2015-09-24 17:40:41'});
+    this.props.onPostSubmit({id: this.state.id, content: content});
     this.setState({id: this.state.id + 1});
     React.findDOMNode(this.refs.content).value = '';
   },
@@ -64,7 +76,7 @@ var PostsList = React.createClass({
         <Post
           key={post.id}
           id={post.id}
-          created_at={post.created_at}
+          created_at={post.created_at.toString()}
           content={post.content}
           handlePostDelete={handlePostDelete} />
       );
@@ -171,7 +183,7 @@ var PostAdmin = React.createClass({
       })();
     } else {
       buttonGroup = (function() {
-        return(
+        return (
           <div className="notEditingButtons">
             <button onClick={handleEdit}>Edit</button>
             <button onClick={handleDelete}>Delete</button>

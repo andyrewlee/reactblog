@@ -1,11 +1,36 @@
+var mysql = require('mysql');
+var globals = require('./../../config/globals');
+var connection = mysql.createConnection(globals.database());
+
 var Post = {
   all: function(callback) {
-    var data = [
-      {id: 1, content: 'First Post', created_at: '2015-09-24 14:04:02'},
-      {id: 2, content: 'Second Post', created_at: '2015-09-24 16:13:21'},
-      {id: 3, content: 'Third Post', created_at: '2015-09-24 17:40:41'}
-    ];
-    return callback(data);
+    var query = 'SELECT * FROM posts';
+    connection.query(query, function(err, rows, fields) {
+      if(err) {
+        callback(err, null);
+      } else {
+        callback(null, rows);
+      }
+    });
+  },
+  create: function(params, callback) {
+    var newPost = {
+      content: params.content,
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+
+    var query = 'INSERT INTO posts SET ? ';
+
+    connection.query(query, newPost, function(err, rows, fields) {
+      if(err) {
+        var error = "Post was not created";
+        callback(error, null);
+      } else {
+        newPost.id = rows.insertId;
+        callback(null, {message: 'Post created', newPost: newPost});
+      }
+    });
   }
 }
 

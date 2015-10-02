@@ -11,6 +11,7 @@ var MainLayout = React.createClass({
         </head>
         <body>
           <div id="app" dangerouslySetInnerHTML={{__html: this.props.app}}></div>
+          <script id="initialPostData" type="text/plan" data-json={this.props.postRows}></script>
           <script src="/bundles/postsBox.js"></script>
         </body>
       </html>
