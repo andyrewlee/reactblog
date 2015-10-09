@@ -5,7 +5,7 @@ var PostsBox = require('./../views/components/postsBox.jsx');
 
 var Post = require('./../models/post');
 
-router.get('/', function(req, res) {
+router.get('/a', function(req, res) {
   Post.all(function(err, rows) {
     var rows = JSON.stringify(rows);
     res.render('layouts/mainLayout',
@@ -16,7 +16,7 @@ router.get('/', function(req, res) {
   });
 });
 
-router.get('/test', function(req, res) {
+router.get('/', function(req, res) {
   res.send("testing");
 });
 
