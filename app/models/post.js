@@ -40,7 +40,21 @@ var Post = {
         var error = "Post was not destroyed";
         callback(error, null);
       } else {
-        callback(null, rows);
+        callback(null, result);
+      }
+    });
+  },
+  update: function(id, params, callback) {
+    var currentDate = new Date();
+    var query = 'UPDATE posts SET content=' + connection.escape(params.content) +
+      ', updated_at=' + '"' + currentDate + '"' + ' WHERE id=' + connection.escape(id);
+    console.log(query);
+    connection.query(query, function(err, result) {
+      if(err) {
+        var error = "Post was not updated";
+        callback(error, null);
+      } else {
+        callback(null, result);
       }
     });
   }

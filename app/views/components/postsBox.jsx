@@ -43,13 +43,39 @@ var PostsBox = React.createClass({
     });
 
   },
+  handlePostUpdate: function(id, currentContent) {
+    var self = this;
+    console.log("User wants to update", id);
+    console.log("User wants to update", currentContent);
+    $.ajax({
+      url: '/posts/' + id,
+      method: 'PATCH',
+      data: {content: currentContent},
+      success: function(res) {
+        console.log('success');
+        var posts = self.state.model;
+        for(var i = 0; i < posts.length; i++) {
+          if(posts[i].id == id) {
+            posts[i].content = currentContent;
+            break;
+          }
+        }
+        self.setState({model: posts});
+      },
+      error: function() {
+        console.log('failure');
+      }
+    });
+
+  },
   render: function() {
     return (
       <div className='postsBox'>
         <h1>Posts</h1>
         <PostForm onPostSubmit={this.handlePostSubmit}/>
         <PostsList data={this.state.model} 
-                   handlePostDelete={this.handlePostDelete} />
+                   handlePostDelete={this.handlePostDelete} 
+                   handlePostUpdate={this.handlePostUpdate} />
       </div>
     );
   }
@@ -73,11 +99,16 @@ var PostForm = React.createClass({
 });
 
 var PostsList = React.createClass({
-  handlePostDelete: function() {
-    this.props.handlePostDelete(this.props.id);
+  handlePostDelete: function(id) {
+    this.props.handlePostDelete(id);
+  },
+  handlePostUpdate: function(id, currentContent) {
+    console.log("PostsList");
+    this.props.handlePostUpdate(id, currentContent);
   },
   render: function() {
-    var handlePostDelete = this.props.handlePostDelete;
+    var handlePostDelete = this.handlePostDelete;
+    var handlePostUpdate = this.handlePostUpdate;
     var postNodes = this.props.data.map(function(post) {
       return (
         <Post
@@ -85,6 +116,7 @@ var PostsList = React.createClass({
           id={post.id}
           created_at={post.created_at.toString()}
           content={post.content}
+          handlePostUpdate={handlePostUpdate}
           handlePostDelete={handlePostDelete} />
       );
     });
@@ -103,8 +135,11 @@ var Post = React.createClass({
       currentContent: this.props.content
     }
   },
-  handlePostDelete: function() {
-    this.props.handlePostDelete(this.props.id);
+  handlePostDelete: function(id) {
+    this.props.handlePostDelete(id);
+  },
+  handlePostUpdate: function(id) {
+    this.props.handlePostUpdate(id, this.state.currentContent);
   },
   handleChange: function() {
     this.setState({currentContent: React.findDOMNode(this.refs.content).value.trim()});
@@ -124,12 +159,11 @@ var Post = React.createClass({
       var currentContent = this.state.currentContent;
       postContent = (function() {
         return (
-          <form className="editPostForm" onSubmit={handleSubmit}>
+          <form className="editPostForm">
             <input type="text"
                    ref="content"
                    value={currentContent}
                    onChange={handleChange} />
-            <input type="submit" value="Post" />
           </form>
         );
       })();
@@ -151,7 +185,8 @@ var Post = React.createClass({
         <PostAdmin
           key={this.props.id}
           id={this.props.id}
-          handlePostDelete={this.props.handlePostDelete}
+          handlePostDelete={this.handlePostDelete}
+          handlePostUpdate={this.handlePostUpdate}
           handlePostToggle={this.handlePostToggle}
           userIsEditing={this.state.userIsEditing} />
       </div>
@@ -170,6 +205,8 @@ var PostAdmin = React.createClass({
     this.props.handlePostToggle();
   },
   handleUpdate:function() {
+    console.log("PostAdmin");
+    this.props.handlePostUpdate(this.props.id);
     this.props.handlePostToggle();
   },
   render: function() {

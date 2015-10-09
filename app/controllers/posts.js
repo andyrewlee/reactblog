@@ -24,4 +24,15 @@ router.delete('/:id', function(req, res) {
   });
 });
 
+router.patch('/:id', function(req, res) {
+  console.log(req.body);
+  Post.update(req.params.id, req.body, function(err, obj) {
+    if(err) {
+      res.status(400).send({error: err});
+    } else {
+      res.send(obj);
+    }
+  });
+});
+
 module.exports = router;
