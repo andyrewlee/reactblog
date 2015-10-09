@@ -16,4 +16,8 @@ router.get('/', function(req, res) {
   });
 });
 
+router.get('/test', function(req, res) {
+  res.send("testing");
+});
+
 module.exports = router;
