@@ -1,5 +1,5 @@
 module.exports = {
-  applicationPort: 5000,
+  applicationPort: 80,
   database: function() {
     return {
       host: 'localhost',
